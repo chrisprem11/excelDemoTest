@@ -13,14 +13,20 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.example.demo.entity.Todo;
 
 @Service
 public class DataService {
 
 	@Autowired
 	private UploadService uploadService;
+	
+	@Autowired
+	private SimpMessagingTemplate messagingTemplate;
 
 	public List<Map<String, String>> doParsing(MultipartFile file) throws Exception {
 		Path tempDir = Files.createTempDirectory("");
@@ -58,6 +64,13 @@ public class DataService {
 			System.out.println(e.getMessage());
 		}
 
+	}
+	
+	public void sendWSMessage() {
+		Todo todo = new Todo();
+		todo.setName("WS Task");
+		todo.setTask("Complete Websocket Over SockJS");
+		messagingTemplate.convertAndSend("/chat", todo);
 	}
 
 }
